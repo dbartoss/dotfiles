@@ -122,9 +122,10 @@ configure_git_basics() {
   log "Applying sane default git settings..."
 
   git config --global init.defaultBranch main
-  git config --global pull.rebase false
+  git config --global pull.rebase true
   git config --global fetch.prune true
   git config --global core.editor "code --wait"
+  git config --global core.excludesfile ~/.gitignore_global
 
   if [[ -n "${GIT_USER_NAME:-}" ]]; then
     git config --global user.name "$GIT_USER_NAME"
@@ -138,6 +139,7 @@ configure_git_basics() {
 configure_mise_runtimes() {
   log "Configuring runtimes with mise (Bun + Go + Rust)..."
   mise use -g bun@latest
+  mise use -g node@lts
   mise use -g go@latest
   mise use -g rust@stable
 }
@@ -314,12 +316,7 @@ apply_karabiner_personalization() {
 install_orbstack_from_dmg() {
   log "Installing OrbStack from DMG..."
 
-  local arch="arm64"
-  if [[ "$(uname -m)" == "x86_64" ]]; then
-    arch="x86_64"
-  fi
-
-  local dmg_url="https://orbstack.dev/download/stable/latest/$arch"
+  local dmg_url="https://cdn-updates.orbstack.dev/arm64/OrbStack_v1.11.3_19358_arm64.dmg"
   local temp_dmg="/tmp/orbstack.dmg"
   local mount_point="/tmp/orbstack_mount"
 
@@ -330,7 +327,7 @@ install_orbstack_from_dmg() {
   fi
 
   # Download DMG
-  log "Downloading OrbStack DMG for $arch..."
+  log "Downloading OrbStack DMG for arm64..."
   if ! curl -L --fail -o "$temp_dmg" "$dmg_url"; then
     log "Failed to download OrbStack DMG from $dmg_url"
     return 1
@@ -383,6 +380,8 @@ install_optional_local_agent_tools() {
 
   local casks=(
     lm-studio
+    codex
+    claude-code
   )
 
   for app in "${casks[@]}"; do
@@ -414,20 +413,22 @@ Next steps:
    git --version
    zsh --version
    code --version
-   docker --version
    bun --version
+   node --version
    go version
    rustc --version
    cargo --version
 
-Optional compatibility mode for legacy projects:
-   mise use -g node@lts
-
 Optional local agent stack:
    INSTALL_LOCAL_AGENT_TOOLS=1 ./scripts/setup_macos.sh
-   brew services start ollama
-   ollama pull qwen2.5-coder:7b
+   ollama --help
+   codex --help
+   claude --help
 
+  6) Run Orbstack. It will set up docker. Then:
+    docker --version
+
+  7) Run Karabiner. It needs to be installed to ovewrite macOS keyboard configurations.
 EOT
 }
 

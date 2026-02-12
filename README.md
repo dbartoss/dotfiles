@@ -48,8 +48,8 @@ GIT_USER_NAME="Your Name" GIT_USER_EMAIL="you@example.com" ./scripts/setup_macos
 
 - **`@anthropic-ai/claude-code`**: Claude CLI for coding tasks and repo workflows.
 - **`@openai/codex`**: Codex CLI for coding assistance and automation.
-
-> These CLIs are installed using **Bun** global packages (`bun add -g ...`), not npm.
+- **`ollama`**: Ollama is an open-source tool that allows you to run large language models directly on your local computer without relying on cloud services.
+- **`lm-studio`**: LM Studio is a desktop application that allows users to run open-source language models locally on their computers without needing internet access.
 
 ### Containers/virtualization
 
@@ -63,7 +63,6 @@ GIT_USER_NAME="Your Name" GIT_USER_EMAIL="you@example.com" ./scripts/setup_macos
 - **`jq`**: JSON parsing/transformation in shell pipelines.
 - **`fd`**: faster/simpler `find` alternative.
 - **`fzf`**: fuzzy finder for interactive shell workflows.
-- **`zoxide`**: smarter directory jumping with command history.
 - **`tmux`**: terminal multiplexer for persistent sessions.
 - **`neovim`**: modal terminal editor.
 - **`oh-my-posh`**: fast cross-shell prompt with customizable segments (Catppuccin Mocha theme).
@@ -72,6 +71,7 @@ GIT_USER_NAME="Your Name" GIT_USER_EMAIL="you@example.com" ./scripts/setup_macos
 
 - **`mise`**: runtime manager (replaces juggling version managers); used here to pin Bun, Go, and Rust globally.
 - **`bun`**: JavaScript runtime, package manager, and task runner.
+- **`node`**: JavaScript runtime, package manager, and task runner.
 - **`go`**: Go toolchain for backend services, CLIs, and cloud-native software.
 - **`rust`** (`rustc` + `cargo`): systems and backend language with excellent tooling and performance.
 
@@ -103,7 +103,7 @@ It includes:
 - **Catppuccin Mocha color theme** (dark, high-contrast but soft palette).
 - **macOS-friendly window settings** (`Buttonless` decorations, slight opacity, padding, Option-as-Alt).
 - **Editor-friendly defaults** (beam cursor, large scrollback, copy selection to clipboard).
-- **Useful keybindings** for font scaling (`⌘+`, `⌘-`, `⌘0`). Note: window management keybindings (`⌘N`, `⌘W`) are disabled in favor of tmux session management.
+- **Useful keybindings** for new window and font scaling (`⌘N`, `⌘+`, `⌘-`, `⌘0`).
 - **Safe overwrite behavior**: existing `alacritty.toml` is backed up with a timestamp before applying updates.
 
 ---
@@ -117,6 +117,7 @@ If you want to expand beyond the default install set:
 - **`hyperfine`**: benchmark CLI commands/scripts.
 - **`bat`**: `cat` with syntax highlighting and paging.
 - **`eza`**: modern `ls` replacement.
+- **`zoxide`**: smarter directory jumping.
 - **`pnpm`** (via Corepack or Bun-compatible workflow): useful for monorepos where teams standardize on pnpm.
 
 ---
@@ -161,7 +162,7 @@ claude login
 codex login
 ```
 
-4. Run checks:
+1. Run checks:
 
 ```bash
 brew --version
@@ -169,26 +170,26 @@ git --version
 mise doctor
 mise ls
 bun --version
+node --version
 go version
 rustc --version
 cargo --version
 ```
 
-5. Verify tools:
+1. Verify tools:
 
 ```bash
 zsh --version
 alacritty --version
 code --version
 docker --version
-bun --version
 ```
 
 ---
 
-## Optional: enable Node later (only if needed)
+## Claude and Codex requirments
 
-Some legacy projects still require Node/npm directly. If needed:
+Claude and Codex require Node/npm directly.
 
 ```bash
 mise use -g node@lts
@@ -205,10 +206,10 @@ This keeps the default environment Bun-first while still allowing compatibility 
 - Zsh is configured to auto-start tmux on new terminal sessions; use `TMUX='' zsh` or set `$TMUX` to bypass if needed.
 - Terminal TERM is set to `screen-256color` when inside tmux for best compatibility with clear command and other utilities.
 
-
 ## Keybindings Reference
 
 ### Alacritty (Terminal Emulator)
+
 These keybindings work globally in Alacritty and don't conflict with tmux/zsh:
 
 | Keybinding | Action |
@@ -220,9 +221,11 @@ These keybindings work globally in Alacritty and don't conflict with tmux/zsh:
 | `⌘V` | Paste from clipboard |
 
 ### Tmux (Terminal Multiplexer)
+
 All tmux commands use `Ctrl+Space` as the prefix. Press `Ctrl+Space` then the key:
 
 #### Pane Navigation
+
 | Keybinding | Action |
 |---|---|
 | `C-Space h` | Select left pane |
@@ -231,6 +234,7 @@ All tmux commands use `Ctrl+Space` as the prefix. Press `Ctrl+Space` then the ke
 | `C-Space l` | Select right pane |
 
 #### Pane Resizing (repeatable - hold after prefix)
+
 | Keybinding | Action |
 |---|---|
 | `C-Space H` | Resize pane left (5 cells) |
@@ -239,6 +243,7 @@ All tmux commands use `Ctrl+Space` as the prefix. Press `Ctrl+Space` then the ke
 | `C-Space L` | Resize pane right (5 cells) |
 
 #### Window Management
+
 | Keybinding | Action |
 |---|---|
 | `C-Space c` | Create new window (opens in current path) |
@@ -250,6 +255,7 @@ All tmux commands use `Ctrl+Space` as the prefix. Press `Ctrl+Space` then the ke
 | `C-Space r` | Reload tmux config file |
 
 #### Copy Mode (Vi-like)
+
 | Keybinding | Action |
 |---|---|
 | `C-Space [` | Enter copy mode |
@@ -259,9 +265,11 @@ All tmux commands use `Ctrl+Space` as the prefix. Press `Ctrl+Space` then the ke
 | `Escape` | Cancel copy mode |
 
 ### Vim/Neovim (if used within tmux)
+
 Standard vim keybindings apply. Note: `Ctrl+Space` is reserved for tmux, so it won't reach vim.
 
 ### Karabiner-Elements (External Keyboard Support)
+
 For Dell WK717 keyboards and other external keyboards, Karabiner maps navigation keys to macOS conventions. Configuration is managed in `config/karabiner/karabiner.json` and automatically symlinked to `~/.config/karabiner/karabiner.json`.
 
 Key mappings include:
