@@ -53,8 +53,7 @@ GIT_USER_NAME="Your Name" GIT_USER_EMAIL="you@example.com" ./scripts/setup_macos
 
 ### Containers/virtualization
 
-- **`docker` (Docker Desktop)**: local container build/run tooling with Docker Engine + Compose UX.
-- **`orbstack`**: lighter alternative to Docker Desktop for containers/VMs on macOS (optional, but useful for performance).
+- **`orbstack`**: lighter alternative to Docker Desktop for containers/VMs on macOS (optional). Note: docker cask is commented out by default in `install_casks()` but can be enabled if needed.
 
 ### Core command-line engineering utilities
 
@@ -62,12 +61,12 @@ GIT_USER_NAME="Your Name" GIT_USER_EMAIL="you@example.com" ./scripts/setup_macos
 - **`gh`**: GitHub CLI for PRs/issues/actions.
 - **`curl` / `wget`**: HTTP download/test tooling.
 - **`jq`**: JSON parsing/transformation in shell pipelines.
-- **`ripgrep`** (`rg`): extremely fast project text search.
 - **`fd`**: faster/simpler `find` alternative.
 - **`fzf`**: fuzzy finder for interactive shell workflows.
+- **`zoxide`**: smarter directory jumping with command history.
 - **`tmux`**: terminal multiplexer for persistent sessions.
 - **`neovim`**: modal terminal editor.
-- **`starship`**: fast cross-shell prompt.
+- **`oh-my-posh`**: fast cross-shell prompt with customizable segments (Catppuccin Mocha theme).
 
 ### Runtime/version management + language stack
 
@@ -84,12 +83,13 @@ GIT_USER_NAME="Your Name" GIT_USER_EMAIL="you@example.com" ./scripts/setup_macos
 
 ### Security and UX extras
 
-- **`1password`**: credential/secret manager.
 - **`rectangle`**: window management shortcuts.
+- **`1password`**: credential/secret manager (commented out by default in `install_casks()` but can be enabled if needed).
 
 ### Browsers and API testing
 
-- **`firefox`**, **`google-chrome`**, and **`zen-browser`**: cross-browser verification, including Zen Browser.
+- **`google-chrome`**: cross-browser verification.
+- **`firefox`** and **`zen-browser`**: commented out by default in `install_casks()` but can be enabled if needed.
 - **`postman`**: API development/testing UI.
 
 ---
@@ -103,7 +103,7 @@ It includes:
 - **Catppuccin Mocha color theme** (dark, high-contrast but soft palette).
 - **macOS-friendly window settings** (`Buttonless` decorations, slight opacity, padding, Option-as-Alt).
 - **Editor-friendly defaults** (beam cursor, large scrollback, copy selection to clipboard).
-- **Useful keybindings** for new window and font scaling (`⌘N`, `⌘+`, `⌘-`, `⌘0`).
+- **Useful keybindings** for font scaling (`⌘+`, `⌘-`, `⌘0`). Note: window management keybindings (`⌘N`, `⌘W`) are disabled in favor of tmux session management.
 - **Safe overwrite behavior**: existing `alacritty.toml` is backed up with a timestamp before applying updates.
 
 ---
@@ -117,7 +117,6 @@ If you want to expand beyond the default install set:
 - **`hyperfine`**: benchmark CLI commands/scripts.
 - **`bat`**: `cat` with syntax highlighting and paging.
 - **`eza`**: modern `ls` replacement.
-- **`zoxide`**: smarter directory jumping.
 - **`pnpm`** (via Corepack or Bun-compatible workflow): useful for monorepos where teams standardize on pnpm.
 
 ---
@@ -202,3 +201,110 @@ This keeps the default environment Bun-first while still allowing compatibility 
 - Script expects Homebrew at `/opt/homebrew` (Apple Silicon default).
 - Bun global installs generally place binaries under `~/.bun/bin`; script ensures this path is exported in `~/.zshrc`.
 - `claude` and `codex` may require authentication after installation.
+- Config files (alacritty, tmux, zsh, karabiner, oh-my-posh) are automatically symlinked from the repo to `~/.config/` during setup.
+- Zsh is configured to auto-start tmux on new terminal sessions; use `TMUX='' zsh` or set `$TMUX` to bypass if needed.
+- Terminal TERM is set to `screen-256color` when inside tmux for best compatibility with clear command and other utilities.
+
+
+## Keybindings Reference
+
+### Alacritty (Terminal Emulator)
+These keybindings work globally in Alacritty and don't conflict with tmux/zsh:
+
+| Keybinding | Action |
+|---|---|
+| `⌘+` | Increase font size |
+| `⌘-` | Decrease font size |
+| `⌘0` | Reset font size to default |
+| `⌘C` | Copy selection |
+| `⌘V` | Paste from clipboard |
+
+### Tmux (Terminal Multiplexer)
+All tmux commands use `Ctrl+Space` as the prefix. Press `Ctrl+Space` then the key:
+
+#### Pane Navigation
+| Keybinding | Action |
+|---|---|
+| `C-Space h` | Select left pane |
+| `C-Space j` | Select down pane |
+| `C-Space k` | Select up pane |
+| `C-Space l` | Select right pane |
+
+#### Pane Resizing (repeatable - hold after prefix)
+| Keybinding | Action |
+|---|---|
+| `C-Space H` | Resize pane left (5 cells) |
+| `C-Space J` | Resize pane down (5 cells) |
+| `C-Space K` | Resize pane up (5 cells) |
+| `C-Space L` | Resize pane right (5 cells) |
+
+#### Window Management
+| Keybinding | Action |
+|---|---|
+| `C-Space c` | Create new window (opens in current path) |
+| `C-Space \|` | Split window vertically (current path) |
+| `C-Space -` | Split window horizontally (current path) |
+| `C-Space ,` | Rename current window |
+| `C-Space Tab` | Jump to last active window |
+| `C-Space s` | Choose session |
+| `C-Space r` | Reload tmux config file |
+
+#### Copy Mode (Vi-like)
+| Keybinding | Action |
+|---|---|
+| `C-Space [` | Enter copy mode |
+| `v` | Begin selection (in copy mode) |
+| `y` | Copy selection and exit copy mode (macOS clipboard) |
+| `C-Space p` | Paste from macOS clipboard |
+| `Escape` | Cancel copy mode |
+
+### Vim/Neovim (if used within tmux)
+Standard vim keybindings apply. Note: `Ctrl+Space` is reserved for tmux, so it won't reach vim.
+
+### Karabiner-Elements (External Keyboard Support)
+For Dell WK717 keyboards and other external keyboards, Karabiner maps navigation keys to macOS conventions. Configuration is managed in `config/karabiner/karabiner.json` and automatically symlinked to `~/.config/karabiner/karabiner.json`.
+
+Key mappings include:
+
+| Physical Key | Maps To | Behavior |
+|---|---|---|
+| `Home` | `⌘Left` | Jump to line start |
+| `Home+Shift` | `⌘Shift+Left` | Select to line start |
+| `End` | `⌘Right` | Jump to line end |
+| `End+Shift` | `⌘Shift+Right` | Select to line end |
+| `Page Up` | `Option+Up` | Page up |
+| `Page Down` | `Option+Down` | Page down |
+| `Ctrl+Home` | `⌘Up` | Jump to document start |
+| `Ctrl+End` | `⌘Down` | Jump to document end |
+
+---
+
+## Startup Behavior
+
+1. **Alacritty opens** → launches a new terminal instance
+2. **Zsh initializes** → automatically starts/attaches to tmux session named `main`
+3. **Tmux session active** → you can now use all `C-Space` prefix commands
+
+To manually manage tmux sessions:
+
+```bash
+# List sessions
+tmux list-sessions
+
+# Create named session
+tmux new-session -s work
+
+# Attach to session
+tmux attach -t main
+
+# Kill session
+tmux kill-session -t main
+```
+
+---
+
+## No Conflicts
+
+- **Alacritty keybindings** use `⌘` (Command) modifier → won't trigger in app
+- **Tmux prefix** is `C-Space` (Ctrl+Space) → doesn't overlap with terminal emulator or vim
+- **Karabiner** only affects external keyboards, not built-in MacBook keyboard

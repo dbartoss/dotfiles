@@ -50,16 +50,15 @@ install_formulae() {
     curl
     wget
     jq
-    ripgrep
     fd
     fzf
     tmux
     neovim
-    starship
+    oh-my-posh
+    zoxide
     zsh
     direnv
     pre-commit
-    watchman
     mise
   )
 
@@ -77,14 +76,14 @@ install_casks() {
   local casks=(
     alacritty
     visual-studio-code
-    docker
-    1password
+    karabiner-elements
+#    docker
+   #  1password
     rectangle
-    firefox
+ #   firefox
     google-chrome
-    zen-browser
+ #   zen-browser
     postman
-    orbstack
   )
 
   log "Installing Homebrew casks..."
@@ -143,20 +142,24 @@ configure_mise_runtimes() {
   mise use -g rust@stable
 }
 
-ensure_bun_path() {
+configure_zshrc() {
   local zshrc="$HOME/.zshrc"
-  local path_line='export PATH="$HOME/.bun/bin:$PATH"'
+  local source_file="$REPO_ROOT/config/zsh/.zshrc"
 
-  if [[ ! -f "$zshrc" ]]; then
-    touch "$zshrc"
+  if [[ ! -f "$source_file" ]]; then
+    log "Zsh config source not found at $source_file; skipping."
+    return
   fi
 
-  if ! grep -Fq "$path_line" "$zshrc"; then
-    log "Adding Bun global bin path to ~/.zshrc..."
-    printf "\n%s\n" "$path_line" >>"$zshrc"
+  # Backup existing .zshrc if it exists
+  if [[ -e "$zshrc" || -L "$zshrc" ]]; then
+    mv "$zshrc" "$zshrc.bak.$(date +%Y%m%d%H%M%S)"
+    log "Backed up existing .zshrc"
   fi
 
-  export PATH="$HOME/.bun/bin:$PATH"
+  # Create symlink to repo-managed config
+  ln -sfn "$source_file" "$zshrc"
+  log "Linked Zsh config -> $zshrc"
 }
 
 install_js_tooling_with_bun() {
@@ -173,24 +176,187 @@ install_js_tooling_with_bun() {
 
 apply_alacritty_personalization() {
   local source_file="$REPO_ROOT/config/alacritty/alacritty.toml"
-  local target_dir="$HOME/.config/alacritty"
-  local target_file="$target_dir/alacritty.toml"
 
   if [[ ! -f "$source_file" ]]; then
     log "Alacritty config source not found at $source_file; skipping personalization."
     return
   fi
 
-  mkdir -p "$target_dir"
-
-  if [[ -f "$target_file" ]]; then
-    cp "$target_file" "$target_file.bak.$(date +%Y%m%d%H%M%S)"
+  local target_home
+  if [[ -n "${SUDO_USER:-}" ]]; then
+    target_home=$(eval echo "~${SUDO_USER}")
+    log "Script running under sudo; targeting home of ${SUDO_USER}: ${target_home}"
+  else
+    target_home="$HOME"
   fi
 
-  cp "$source_file" "$target_file"
-  log "Applied Alacritty Catppuccin personalization to $target_file"
+  local target_dir="$target_home/.config/alacritty"
+  local target_file="$target_dir/alacritty.toml"
+
+  mkdir -p "$target_dir"
+
+  # Use absolute path for symlink (simpler and more reliable)
+  local link_target="$source_file"
+
+  # If an existing target exists and isn't already the desired link, back it up.
+  if [[ -e "$target_file" || -L "$target_file" ]]; then
+    local already_linked=false
+    if [[ -L "$target_file" ]]; then
+      # Check if symlink points to the source file
+      local existing_target
+      existing_target=$(readlink "$target_file" 2>/dev/null || echo "")
+      if [[ "$existing_target" == "$link_target" ]]; then
+        already_linked=true
+      fi
+    fi
+
+    if [[ "$already_linked" == true ]]; then
+      log "Alacritty config already linked to repo source; nothing to do"
+      return
+    fi
+
+    mv "$target_file" "$target_file.bak.$(date +%Y%m%d%H%M%S)"
+    log "Backed up existing Alacritty config to $target_file.bak.*"
+  fi
+
+  # Create the symlink
+  ln -sfn "$link_target" "$target_file"
+  log "Linked Alacritty config -> $target_file"
 }
 
+apply_omp_personalization() {
+  local source_file="$REPO_ROOT/config/omp/config.toml"
+
+  if [[ ! -f "$source_file" ]]; then
+    log "Oh My Posh config source not found at $source_file; skipping."
+    return
+  fi
+
+  local target_home
+  if [[ -n "${SUDO_USER:-}" ]]; then
+    target_home=$(eval echo "~${SUDO_USER}")
+  else
+    target_home="$HOME"
+  fi
+
+  local target_dir="$target_home/.config/omp"
+  local target_file="$target_dir/config.toml"
+
+  mkdir -p "$target_dir"
+
+  if [[ -e "$target_file" || -L "$target_file" ]]; then
+    mv "$target_file" "$target_file.bak.$(date +%Y%m%d%H%M%S)"
+    log "Backed up existing Oh My Posh config"
+  fi
+
+  ln -sfn "$source_file" "$target_file"
+  log "Linked Oh My Posh config -> $target_file"
+}
+
+apply_tmux_personalization() {
+  local source_file="$REPO_ROOT/config/tmux/tmux.conf"
+
+  if [[ ! -f "$source_file" ]]; then
+    log "Tmux config source not found at $source_file; skipping."
+    return
+  fi
+
+  local target_home
+  if [[ -n "${SUDO_USER:-}" ]]; then
+    target_home=$(eval echo "~${SUDO_USER}")
+  else
+    target_home="$HOME"
+  fi
+
+  local target_dir="$target_home/.config/tmux"
+  local target_file="$target_dir/tmux.conf"
+
+  mkdir -p "$target_dir"
+
+  if [[ -e "$target_file" || -L "$target_file" ]]; then
+    mv "$target_file" "$target_file.bak.$(date +%Y%m%d%H%M%S)"
+    log "Backed up existing Tmux config"
+  fi
+
+  ln -sfn "$source_file" "$target_file"
+  log "Linked Tmux config -> $target_file"
+}
+
+apply_karabiner_personalization() {
+  local source_file="$REPO_ROOT/config/karabiner/karabiner.json"
+
+  if [[ ! -f "$source_file" ]]; then
+    log "Karabiner config source not found at $source_file; skipping."
+    return
+  fi
+
+  local target_home
+  if [[ -n "${SUDO_USER:-}" ]]; then
+    target_home=$(eval echo "~${SUDO_USER}")
+  else
+    target_home="$HOME"
+  fi
+
+  local target_dir="$target_home/.config/karabiner"
+  local target_file="$target_dir/karabiner.json"
+
+  mkdir -p "$target_dir"
+
+  if [[ -e "$target_file" || -L "$target_file" ]]; then
+    mv "$target_file" "$target_file.bak.$(date +%Y%m%d%H%M%S)"
+    log "Backed up existing Karabiner config"
+  fi
+
+  ln -sfn "$source_file" "$target_file"
+  log "Linked Karabiner config -> $target_file"
+}
+
+install_orbstack_from_dmg() {
+  log "Installing OrbStack from DMG..."
+
+  local arch="arm64"
+  if [[ "$(uname -m)" == "x86_64" ]]; then
+    arch="x86_64"
+  fi
+
+  local dmg_url="https://orbstack.dev/download/stable/latest/$arch"
+  local temp_dmg="/tmp/orbstack.dmg"
+  local mount_point="/tmp/orbstack_mount"
+
+  # Check if already installed
+  if [[ -d "/Applications/OrbStack.app" ]]; then
+    log "OrbStack already installed"
+    return
+  fi
+
+  # Download DMG
+  log "Downloading OrbStack DMG for $arch..."
+  if ! curl -L --fail -o "$temp_dmg" "$dmg_url"; then
+    log "Failed to download OrbStack DMG from $dmg_url"
+    return 1
+  fi
+
+  # Mount the DMG
+  log "Mounting OrbStack DMG..."
+  mkdir -p "$mount_point"
+  if ! hdiutil attach "$temp_dmg" -mountpoint "$mount_point"; then
+    log "Failed to mount OrbStack DMG"
+    rm -f "$temp_dmg"
+    return 1
+  fi
+
+  # Copy app to Applications
+  log "Installing OrbStack to /Applications..."
+  cp -R "$mount_point"/*.app /Applications/ 2>/dev/null || true
+
+  # Unmount and clean up
+  log "Cleaning up..."
+  hdiutil detach "$mount_point" 2>/dev/null || true
+  rm -f "$temp_dmg"
+  rm -rf "$mount_point"
+
+  log "OrbStack installation complete"
+}
 
 install_optional_local_agent_tools() {
   if [[ "${INSTALL_LOCAL_AGENT_TOOLS:-0}" != "1" ]]; then
@@ -200,21 +366,24 @@ install_optional_local_agent_tools() {
 
   log "Installing optional local agent/automation tools..."
 
-  local formulas=(
-    ollama
-  )
+  # Install Ollama pinned to a known-good version (default 0.12.4).
+  # Allow overriding via the OLLAMA_VERSION env var if the user needs a different pinned release.
+  local ollama_version="${OLLAMA_VERSION:-0.12.4}"
+
+  if command -v ollama >/dev/null 2>&1; then
+    echo "  - ollama already installed"
+  else
+    log "Installing Ollama ${ollama_version} via official installer..."
+    # The official installer supports OLLAMA_VERSION env var; use it to pin the version.
+    export OLLAMA_VERSION="$ollama_version" 
+    curl -fsSL https://ollama.com/install.sh | sh || {
+      log "Ollama installer failed for ${ollama_version}. Please install manually or adjust OLLAMA_VERSION."
+    }
+  fi
 
   local casks=(
     lm-studio
   )
-
-  for pkg in "${formulas[@]}"; do
-    if brew list --formula "$pkg" >/dev/null 2>&1; then
-      echo "  - $pkg already installed"
-    else
-      brew install "$pkg"
-    fi
-  done
 
   for app in "${casks[@]}"; do
     if brew list --cask "$app" >/dev/null 2>&1; then
@@ -262,6 +431,22 @@ Optional local agent stack:
 EOT
 }
 
+
+# Cleanup function for temporary files
+cleanup_temp_files() {
+  rm -f /tmp/orbstack.dmg
+  rm -rf /tmp/orbstack_mount
+}
+
+# Set trap to cleanup on exit (both success and error)
+trap cleanup_temp_files EXIT
+
+if [[ "$(uname -s)" != "Darwin" ]]; then
+  echo "This setup script is for macOS only."
+  exit 1
+fi
+
+
 main() {
   ensure_xcode_cli_tools
   ensure_homebrew
@@ -270,9 +455,13 @@ main() {
   configure_zsh
   configure_git_basics
   configure_mise_runtimes
-  ensure_bun_path
+  configure_zshrc
+  apply_omp_personalization
+  apply_tmux_personalization
+  apply_karabiner_personalization
   install_js_tooling_with_bun
   apply_alacritty_personalization
+  install_orbstack_from_dmg
   install_optional_local_agent_tools
   post_install_tips
 }
