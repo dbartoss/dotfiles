@@ -3,7 +3,7 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/omp-instant-prompt-${(%):-%n}.zsh" ]];
   source "${XDG_CACHE_HOME:-$HOME/.cache}/omp-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Auto-start tmux (BEFORE setting TERM)
+# # Auto-start tmux (BEFORE setting TERM)
 if [[ -z "$TMUX" ]] && [[ -z "$EMACS" ]] && [[ -z "$VIM" ]]; then
   exec tmux new-session -A -s main
 fi
@@ -51,10 +51,177 @@ autoload -Uz compinit && compinit
 zinit cdreplay -q
 
 # Keybindings
+# Make sure we're in an emacs-like keymap (common default)
 bindkey -e
+
+# If region isn't active, start it (set mark), then move.
+_selectify() {
+  local widget="$1"
+  if (( ! REGION_ACTIVE )); then
+    zle set-mark-command
+  fi
+  zle "$widget"
+}
+
+# If a region is active, delete it; otherwise do normal behavior
+_delete_or_backspace() {
+  if (( REGION_ACTIVE )); then
+    zle kill-region
+  else
+    zle backward-delete-char
+  fi
+}
+
+_delete_or_deletechar() {
+  if (( REGION_ACTIVE )); then
+    zle kill-region
+  else
+    zle delete-char
+  fi
+}
+
+# ----- CMD+X (cut) -----
+_cut_region_cmd() {
+  if (( REGION_ACTIVE )); then
+    local s=$MARK e=$CURSOR
+    (( s > e )) && { local t=$s; s=$e; e=$t; }
+    print -rn -- "${BUFFER[s+1,e]}" | pbcopy
+    zle kill-region
+  fi
+}
+
+# ----- CMD+C (copy) -----
+_copy_region_cmd() {
+  if (( REGION_ACTIVE )); then
+    local s=$MARK e=$CURSOR
+    (( s > e )) && { local t=$s; s=$e; e=$t; }
+    print -rn -- "${BUFFER[s+1,e]}" | pbcopy
+    zle deactivate-region
+  fi
+}
+
+# ----- CMD+A (select all) -----
+_select_all_cmd() {
+  # Start selection at beginning, extend to end
+  zle beginning-of-line
+  zle set-mark-command
+  zle end-of-line
+
+  # If you want REALLY everything across newlines too (rare in prompt):
+  # zle beginning-of-buffer-or-history
+  # zle set-mark-command
+  # zle end-of-buffer-or-history
+}
+
+
+# Concrete widgets (must be real functions)
+_select_left()   { _selectify backward-char }
+_select_right()  { _selectify forward-char }
+_select_wleft()  { _selectify backward-word }
+_select_wright() { _selectify forward-word }
+_select_bol()    { _selectify beginning-of-line }
+_select_eol()    { _selectify end-of-line }
+
+# Register as ZLE widgets
+zle -N _select_left
+zle -N _select_right
+zle -N _select_wleft
+zle -N _select_wright
+zle -N _select_bol
+zle -N _select_eol
+zle -N _select_all_cmd
+
+zle -N _delete_or_backspace
+zle -N _delete_or_deletechar
+zle -N _cut_region_cmd
+zle -N _copy_region_cmd
+
+# SELECT ALL
+bindkey '^[a' _select_all_cmd
+
+# CUT / COPY selected
+bindkey '^[w' _copy_region_cmd
+bindkey '^[x' _cut_region_cmd
+
+# Optional: Esc cancels selection
+bindkey '^[' deactivate-region
+
+# Backspace
+bindkey '^?' _delete_or_backspace
+
+# Forward Delete (depends on terminal; keep both)
+bindkey '^[[3~' _delete_or_deletechar
+bindkey '^[3~'  _delete_or_deletechar
+
+# --- Bind keys that should SELECT ---
+
+# Shift+Left / Shift+Right (most terminals)
+bindkey '^[[1;2D' _select_left
+bindkey '^[[1;2C' _select_right
+
+# Shift+Alt+Left / Shift+Alt+Right (select by word)
+bindkey '^[[1;4D' _select_wleft
+bindkey '^[[1;4C' _select_wright
+
+# If your terminal emits these for Shift+Home/End (only if it actually sends them)
+bindkey '^[[1;2H' _select_bol
+bindkey '^[[1;2F' _select_eol
+
+# Shift+Home / Shift+End (your terminal)
+bindkey '^[[1;10D' _select_bol
+bindkey '^[[1;10C' _select_eol
+
+
+# # Enable selection / region
+# zle -N select-region
+
+
+# # SELECTION
+# bindkey '^[[1;2D' backward-char        # Shift + Left
+# bindkey '^[[1;2C' forward-char         # Shift + Right
+# bindkey '^[[1;2A' up-line-or-history   # Shift + Up
+# bindkey '^[[1;2B' down-line-or-history # Shift + Down
+
+# bindkey '^[[1;4D' backward-word        # Shift + Alt + Left
+# bindkey '^[[1;4C' forward-word         # Shift + Alt + Right
+# bindkey '^[^[[D' backward-word         # fallback
+# bindkey '^[^[[C' forward-word
+
+# # Shift + Home
+# bindkey '^[[1;2H' beginning-of-line
+# bindkey '^[[2H'   beginning-of-line
+
+# # Shift + End
+# bindkey '^[[1;2F' end-of-line
+# bindkey '^[[2F'   end-of-line
+
+# Home / End -> beginning/end of line (use terminfo when available)
+[[ -n ${terminfo[khome]} ]] && bindkey "${terminfo[khome]}" beginning-of-line
+[[ -n ${terminfo[kend]}  ]] && bindkey "${terminfo[kend]}"  end-of-line
+
+
+# Fallbacks for common Home/End escape sequences (macOS Terminal, iTerm2, etc.)
+bindkey '^[[H'  beginning-of-line   # Home
+bindkey '^[[F'  end-of-line         # End
+bindkey '^[[1~' beginning-of-line
+bindkey '^[[4~' end-of-line
+bindkey '^[[7~' beginning-of-line
+bindkey '^[[8~' end-of-line
+
+# Alt+Left / Alt+Right -> jump by word
+# Many terminals send ESC + b / ESC + f for Option/Alt combos
+bindkey '^[b' backward-word
+bindkey '^[f' forward-word
+
+# Some setups send ESC + Left/Right CSI sequences
+bindkey '^[[1;3D' backward-word   # Alt+Left
+bindkey '^[[1;3C' forward-word    # Alt+Right
+bindkey '^[[1;9D' backward-word   # sometimes (kitty)
+bindkey '^[[1;9C' forward-word
+
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
-bindkey '^[w' kill-region
+# bindkey '^[w' kill-region
 
 # History
 HISTSIZE=5000
