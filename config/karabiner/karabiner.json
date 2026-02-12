@@ -15,119 +15,302 @@
             "manipulators": [
               {
                 "type": "basic",
-                "from": { "key_code": "home", "modifiers": { "optional": ["any"] } },
-                "to": [{ "key_code": "left_arrow", "modifiers": ["command"] }],
-                "description": "Home -> Cmd+Left",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "home",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "left_arrow",
+                    "modifiers": [
+                      "command"
+                    ]
+                  }
+                ],
+                "description": "Home -> Cmd+Left"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "home", "modifiers": { "mandatory": ["shift"], "optional": ["any"] } },
-                "to": [{ "key_code": "left_arrow", "modifiers": ["command", "shift"] }],
-                "description": "Shift+Home -> Cmd+Shift+Left",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "home",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "left_arrow",
+                    "modifiers": [
+                      "command",
+                      "shift"
+                    ]
+                  }
+                ],
+                "description": "Shift+Home -> Cmd+Shift+Left"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "end", "modifiers": { "optional": ["any"] } },
-                "to": [{ "key_code": "right_arrow", "modifiers": ["command"] }],
-                "description": "End -> Cmd+Right",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "end",
+                  "modifiers": {
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "right_arrow",
+                    "modifiers": [
+                      "command"
+                    ]
+                  }
+                ],
+                "description": "End -> Cmd+Right"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "end", "modifiers": { "mandatory": ["shift"], "optional": ["any"] } },
-                "to": [{ "key_code": "right_arrow", "modifiers": ["command", "shift"] }],
-                "description": "Shift+End -> Cmd+Shift+Right",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "end",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "right_arrow",
+                    "modifiers": [
+                      "command",
+                      "shift"
+                    ]
+                  }
+                ],
+                "description": "Shift+End -> Cmd+Shift+Right"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "up_arrow", "modifiers": { "mandatory": ["fn"], "optional": ["any"] } },
-                "to": [{ "key_code": "page_up" }],
-                "description": "Fn+Up -> PageUp (laptop-style behavior)",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "up_arrow",
+                  "modifiers": {
+                    "mandatory": [
+                      "fn"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "page_up"
+                  }
+                ],
+                "description": "Fn+Up -> PageUp (laptop-style behavior)"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "down_arrow", "modifiers": { "mandatory": ["fn"], "optional": ["any"] } },
-                "to": [{ "key_code": "page_down" }],
-                "description": "Fn+Down -> PageDown (laptop-style behavior)",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "down_arrow",
+                  "modifiers": {
+                    "mandatory": [
+                      "fn"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "page_down"
+                  }
+                ],
+                "description": "Fn+Down -> PageDown (laptop-style behavior)"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "page_up", "modifiers": { "mandatory": ["command"], "optional": ["any"] } },
-                "to": [{ "key_code": "up_arrow", "modifiers": ["command"] }],
-                "description": "Cmd+PageUp -> Cmd+Up (document top)",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "page_up",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "up_arrow",
+                    "modifiers": [
+                      "command"
+                    ]
+                  }
+                ],
+                "description": "Cmd+PageUp -> Cmd+Up (document top)"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "page_up", "modifiers": { "mandatory": ["command", "shift"], "optional": ["any"] } },
-                "to": [{ "key_code": "up_arrow", "modifiers": ["command", "shift"] }],
-                "description": "Cmd+Shift+PageUp -> Cmd+Shift+Up (select to top)",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "page_up",
+                  "modifiers": {
+                    "mandatory": [
+                      "command",
+                      "shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "up_arrow",
+                    "modifiers": [
+                      "command",
+                      "shift"
+                    ]
+                  }
+                ],
+                "description": "Cmd+Shift+PageUp -> Cmd+Shift+Up (select to top)"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "page_down", "modifiers": { "mandatory": ["command"], "optional": ["any"] } },
-                "to": [{ "key_code": "down_arrow", "modifiers": ["command"] }],
-                "description": "Cmd+PageDown -> Cmd+Down (document bottom)",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "page_down",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "down_arrow",
+                    "modifiers": [
+                      "command"
+                    ]
+                  }
+                ],
+                "description": "Cmd+PageDown -> Cmd+Down (document bottom)"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "page_down", "modifiers": { "mandatory": ["command", "shift"], "optional": ["any"] } },
-                "to": [{ "key_code": "down_arrow", "modifiers": ["command", "shift"] }],
-                "description": "Cmd+Shift+PageDown -> Cmd+Shift+Down (select to bottom)",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "page_down",
+                  "modifiers": {
+                    "mandatory": [
+                      "command",
+                      "shift"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "down_arrow",
+                    "modifiers": [
+                      "command",
+                      "shift"
+                    ]
+                  }
+                ],
+                "description": "Cmd+Shift+PageDown -> Cmd+Shift+Down (select to bottom)"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "left_arrow", "modifiers": { "mandatory": ["control"], "optional": ["any"] } },
-                "to": [{ "key_code": "left_arrow", "modifiers": ["option"] }],
-                "description": "Ctrl+Left -> Option+Left (word jump)",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "left_arrow",
+                  "modifiers": {
+                    "mandatory": [
+                      "control"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "left_arrow",
+                    "modifiers": [
+                      "option"
+                    ]
+                  }
+                ],
+                "description": "Ctrl+Left -> Option+Left (word jump)"
               },
               {
                 "type": "basic",
-                "from": { "key_code": "right_arrow", "modifiers": { "mandatory": ["control"], "optional": ["any"] } },
-                "to": [{ "key_code": "right_arrow", "modifiers": ["option"] }],
-                "description": "Ctrl+Right -> Option+Right (word jump)",
-                "conditions": [
-                  { "type": "device_if", "identifiers": [ { "vendor_id": 0, "product_id": 0 } ] }
-                ]
+                "from": {
+                  "key_code": "right_arrow",
+                  "modifiers": {
+                    "mandatory": [
+                      "control"
+                    ],
+                    "optional": [
+                      "any"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "right_arrow",
+                    "modifiers": [
+                      "option"
+                    ]
+                  }
+                ],
+                "description": "Ctrl+Right -> Option+Right (word jump)"
               }
             ]
           }
         ]
       },
-      "devices": [],
+      "devices": [
+        {
+          "device_id": 4294981956,
+          "device_identifiers": {
+            "is_keyboard": true,
+            "product_id": 12317,
+            "vendor_id": 16700
+          },
+          "ignore": false
+        },
+        {
+          "device_id": 4294983013,
+          "device_identifiers": {
+            "is_keyboard": true,
+            "product_id": 8468,
+            "vendor_id": 16700
+          },
+          "ignore": false
+        }
+      ],
       "fn_function_keys": [],
-      "virtual_hid_keyboard": { "country_code": 0 }
+      "virtual_hid_keyboard": {
+        "country_code": 0
+      }
     }
   ]
 }
