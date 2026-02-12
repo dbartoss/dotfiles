@@ -53,15 +53,19 @@ duration = 0
 [keyboard]
 bindings = [
 
-#  Turned off due to TMUX
-#  { key = "N", mods = "Command", action = "CreateNewWindow" },
-#  { key = "W", mods = "Command", action = "Quit" },
+    #  Turned off due to TMUX
+    #  { key = "N", mods = "Command", action = "CreateNewWindow" },
+    #  { key = "W", mods = "Command", action = "Quit" },
 
-  { key = "Plus", mods = "Command", action = "IncreaseFontSize" },
-  { key = "Minus", mods = "Command", action = "DecreaseFontSize" },
-  { key = "Key0", mods = "Command", action = "ResetFontSize" },
-  { key = "V", mods = "Command", action = "Paste" },
-  { key = "C", mods = "Command", action = "Copy" }
+    { key = "Plus", mods = "Command", action = "IncreaseFontSize" },
+    { key = "Minus", mods = "Command", action = "DecreaseFontSize" },
+    { key = "Key0", mods = "Command", action = "ResetFontSize" },
+    { key = "V", mods = "Command", action = "Paste" },
+    { key = "C", mods = "Command", action = "Copy" },
+
+    { key = "C", mods = "Super", chars = "\u001bw" },
+    { key = "X", mods = "Super", chars = "\u001bx" },
+    { key = "A", mods = "Super", chars = "\u001ba" },
 ]
 
 # Catppuccin Mocha colors
