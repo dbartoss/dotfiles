@@ -82,7 +82,7 @@ install_casks() {
     rectangle
  #   firefox
     google-chrome
- #   zen-browser
+    zen-browser
     postman
   )
 
@@ -316,7 +316,7 @@ apply_karabiner_personalization() {
 install_orbstack_from_dmg() {
   log "Installing OrbStack from DMG..."
 
-  local dmg_url="https://cdn-updates.orbstack.dev/arm64/OrbStack_v1.11.3_19358_arm64.dmg"
+  local dmg_url="https://cdn-updates.orbstack.dev/arm64/OrbStack_v2.0.1_19784_arm64.dmg"
   local temp_dmg="/tmp/orbstack.dmg"
   local mount_point="/tmp/orbstack_mount"
 
@@ -365,7 +365,7 @@ install_optional_local_agent_tools() {
 
   # Install Ollama pinned to a known-good version (default 0.12.4).
   # Allow overriding via the OLLAMA_VERSION env var if the user needs a different pinned release.
-  local ollama_version="${OLLAMA_VERSION:-0.12.4}"
+  local ollama_version="${OLLAMA_VERSION:-0.16.2}"
 
   if command -v ollama >/dev/null 2>&1; then
     echo "  - ollama already installed"
